@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Zayed Al-Saidi <zayed.alsaidi@gmail.com>
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid

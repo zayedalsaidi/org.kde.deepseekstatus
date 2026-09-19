@@ -20,6 +20,7 @@ PlasmoidItem {
     readonly property bool isArabic: Qt.locale().name.startsWith("ar") || Qt.application.layoutDirection === Qt.RightToLeft
 
     property bool isPeak: false
+    property bool isWeekday: true
     property string statusText: ""
     property string timeRemainingText: ""
     property color statusColor: "#2ecc71"
@@ -32,7 +33,7 @@ PlasmoidItem {
 
     function updateStatus() {
         var now = new Date();
-        var utcDay = now.getUTCDay();
+        var utcDay = now.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
         var utcHours = now.getUTCHours();
         var utcMinutes = now.getUTCMinutes();
         var utcSeconds = now.getUTCSeconds();
@@ -57,12 +58,12 @@ PlasmoidItem {
         root.peak2StartFrac = p2StartLocalSec / 86400.0;
         root.peak2EndFrac = p2EndLocalSec / 86400.0;
 
-        var isWeekday = (utcDay >= 1 && utcDay <= 5);
+        root.isWeekday = (utcDay >= 1 && utcDay <= 5);
 
         var inWindow1 = (totalUtcSeconds >= 3600 && totalUtcSeconds < 14400);
         var inWindow2 = (totalUtcSeconds >= 21600 && totalUtcSeconds < 36000);
 
-        root.isPeak = isWeekday && (inWindow1 || inWindow2);
+        root.isPeak = root.isWeekday && (inWindow1 || inWindow2);
 
         if (root.isPeak) {
             root.statusText = root.isArabic ? "ذروة" : "PEAK";
@@ -76,16 +77,18 @@ PlasmoidItem {
             root.statusColor = "#2ecc71";
 
             var secondsUntilPeak = 0;
-            if (isWeekday && totalUtcSeconds < 3600) {
+            if (root.isWeekday && totalUtcSeconds < 3600) {
                 secondsUntilPeak = 3600 - totalUtcSeconds;
-            } else if (isWeekday && totalUtcSeconds >= 14400 && totalUtcSeconds < 21600) {
+            } else if (root.isWeekday && totalUtcSeconds >= 14400 && totalUtcSeconds < 21600) {
                 secondsUntilPeak = 21600 - totalUtcSeconds;
             } else {
                 var secondsToEndOfDay = 86400 - totalUtcSeconds;
-                if (utcDay === 5) {
+                if (utcDay === 5) { // Friday
                     secondsUntilPeak = secondsToEndOfDay + (2 * 86400) + 3600;
-                } else if (utcDay === 6) {
+                } else if (utcDay === 6) { // Saturday
                     secondsUntilPeak = secondsToEndOfDay + (1 * 86400) + 3600;
+                } else if (utcDay === 0) { // Sunday
+                    secondsUntilPeak = secondsToEndOfDay + 3600;
                 } else {
                     secondsUntilPeak = secondsToEndOfDay + 3600;
                 }
@@ -221,7 +224,6 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 spacing: 2
 
-                // Disable automatic layout mirroring so coordinate calculations remain absolute
                 LayoutMirroring.enabled: false
                 LayoutMirroring.childrenInherit: true
 
@@ -243,7 +245,7 @@ PlasmoidItem {
                         width: parent.width * Math.abs(root.peak1EndFrac - root.peak1StartFrac)
                         height: parent.height
                         color: "#e74c3c"
-                        visible: width > 0
+                        visible: root.isWeekday && width > 0
                     }
 
                     // Peak Window 2
@@ -255,7 +257,7 @@ PlasmoidItem {
                         width: parent.width * Math.abs(root.peak2EndFrac - root.peak2StartFrac)
                         height: parent.height
                         color: "#e74c3c"
-                        visible: width > 0
+                        visible: root.isWeekday && width > 0
                     }
 
                     // Tick 1 (Peak 1 Start)
@@ -265,6 +267,7 @@ PlasmoidItem {
                         height: parent.height
                         color: "#ffffff"
                         opacity: 0.9
+                        visible: root.isWeekday
                     }
 
                     // Tick 2 (Peak 1 End)
@@ -274,6 +277,7 @@ PlasmoidItem {
                         height: parent.height
                         color: "#ffffff"
                         opacity: 0.9
+                        visible: root.isWeekday
                     }
 
                     // Tick 3 (Peak 2 Start)
@@ -283,6 +287,7 @@ PlasmoidItem {
                         height: parent.height
                         color: "#ffffff"
                         opacity: 0.9
+                        visible: root.isWeekday
                     }
 
                     // Tick 4 (Peak 2 End)
@@ -292,6 +297,7 @@ PlasmoidItem {
                         height: parent.height
                         color: "#ffffff"
                         opacity: 0.9
+                        visible: root.isWeekday
                     }
 
                     // Needle Indicator
@@ -312,6 +318,7 @@ PlasmoidItem {
                     id: labelsContainer
                     Layout.fillWidth: true
                     implicitHeight: 14
+                    visible: root.isWeekday
 
                     function getLocalHour(frac) {
                         var localSec = Math.round(frac * 86400);

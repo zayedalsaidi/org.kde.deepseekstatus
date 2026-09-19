@@ -28,7 +28,7 @@ A native KDE Plasma 6 desktop widget that tracks DeepSeek API pricing tiers in r
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/zayedalsaidi/org.kde.deepseekstatus.git](https://github.com/zayedalsaidi/org.kde.deepseekstatus.git)
+   git clone https://github.com/zayedalsaidi/org.kde.deepseekstatus.git
    cd org.kde.deepseekstatus
 
     ```

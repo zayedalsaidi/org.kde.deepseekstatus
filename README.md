@@ -45,6 +45,24 @@ A native KDE Plasma 6 desktop widget that tracks DeepSeek API pricing tiers in r
     plasmashell --replace &
 
     ```
+### Upgrade the plasmoid using `kpackagetool6`
+1. pull the changes from the repository"
+   ```bash
+   cd org.kde.deepseekstatus
+   git pull
+
+    ```
+2. Upgrade the plasmoid using `kpackagetool6`:
+    ```bash
+    kpackagetool6 --type=Plasma/Applet --upgrade .
+
+    ```
+3. Rebuild the system cache and restart `plasmashell`:
+    ```bash
+    kbuildsycoca6 --noincremental
+    plasmashell --replace &
+
+    ```
 ## DeepSeek API Peak Schedule
 
 DeepSeek API peak pricing hours are based on standard UTC windows:
